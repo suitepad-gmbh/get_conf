@@ -7,7 +7,10 @@ defmodule GetConf.MixProject do
       version: "0.1.0",
       elixir: "~> 1.6",
       start_permanent: Mix.env() == :prod,
-      deps: deps()
+      description: "A simple configuration manager for namespaced modules.",
+      deps: deps(),
+      package: package(),
+      docs: docs()
     ]
   end
 
@@ -21,8 +24,23 @@ defmodule GetConf.MixProject do
   # Run "mix help deps" to learn about dependencies.
   defp deps do
     [
-      # {:dep_from_hexpm, "~> 0.3.0"},
-      # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"},
+      {:ex_doc, ">= 0.0.0", only: :dev}
+    ]
+  end
+
+  defp package do
+    [
+      name: "get_conf",
+      links: %{},
+      licenses: ["MIT"],
+      maintainers: ["Suitepad Developers <engineering@suitepad.de>", "Lukas Rieder <l.rieder@gmail.com>"],
+      source_url: "https://github.com/suitepad-gmbh/get_conf"
+    ]
+  end
+
+  defp docs do
+    [
+      main: "GetConf"
     ]
   end
 end
