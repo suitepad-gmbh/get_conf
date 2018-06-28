@@ -36,7 +36,43 @@ defmodule GetConfTest do
     assert "jump" == TestModule.Inner.get_conf(:base)
   end
 
+  test "set_conf/2 sets configuration for current module" do
+    TestModule.Inner.set_conf(:foo, "bar")
+    TestModule.Inner.set_conf(:meaning_of_live, 42)
+
+    assert "bar" == TestModule.Inner.get_conf(:foo)
+    assert 42 == TestModule.Inner.get_conf(:meaning_of_live)
+    assert [meaning_of_live: 42, foo: "bar"] == Application.get_env(:get_conf, TestModule.Inner)
+  end
+
   test "get_conf/3 returns nil if there is no keyword list" do
     assert nil == GetConf.get_conf(:get_conf, FooModule, :base)
+    assert nil == GetConf.get_conf(:what_is_dat, FooModule, :base)
+  end
+
+  test "get_conf/3 raise error when invalid argument is passed" do
+    assert_raise FunctionClauseError, fn ->
+      GetConf.get_conf("wrong input", FooModule, :base)
+    end
+  end
+
+  test "set_conf/4 puts a keyword list with a value in the application env for the module" do
+    GetConf.set_conf(:get_conf, TestModule, :zig, "zag")
+
+    assert "zag" == GetConf.get_conf(:get_conf, TestModule, :zig)
+    assert [zig: "zag", foo: "bar", base: "jump"] = Application.get_env(:get_conf, TestModule)
+  end
+
+  test "set_conf/4 overrides the value of an existing key in the configuration" do
+    GetConf.set_conf(:get_conf, TestModule, :foo, "zag")
+
+    assert "zag" == GetConf.get_conf(:get_conf, TestModule, :foo)
+    assert [foo: "zag", base: "jump"] = Application.get_env(:get_conf, TestModule)
+  end
+
+  test "set_conf/4 raises if the application env is not a list" do
+    assert_raise RuntimeError, fn ->
+      GetConf.set_conf(:get_conf, FooModule, :foo, "bar")
+    end
   end
 end
