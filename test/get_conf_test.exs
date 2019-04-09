@@ -50,6 +50,11 @@ defmodule GetConfTest do
     assert nil == GetConf.get_conf(:what_is_dat, FooModule, :base)
   end
 
+  test "get_conf/4 returns the default value if there is no config set" do
+    assert :foo == GetConf.get_conf(:get_conf, FooModule, :base, :foo)
+    assert :foo == GetConf.get_conf(:what_is_dat, FooModule, :base, :foo)
+  end
+
   test "get_conf/3 raise error when invalid argument is passed" do
     assert_raise FunctionClauseError, fn ->
       GetConf.get_conf("wrong input", FooModule, :base)

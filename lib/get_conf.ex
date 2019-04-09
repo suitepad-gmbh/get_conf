@@ -34,8 +34,8 @@ defmodule GetConf do
     otp_app = Keyword.fetch!(opts, :otp_app)
 
     quote do
-      def get_conf(key) do
-        GetConf.get_conf(unquote(otp_app), __MODULE__, key)
+      def get_conf(key, default \\ nil) do
+        GetConf.get_conf(unquote(otp_app), __MODULE__, key, default)
       end
 
       def set_conf(key, value) do
@@ -44,7 +44,8 @@ defmodule GetConf do
     end
   end
 
-  def get_conf(_otp_app, :"Elixir", _key), do: nil
+  def get_conf(otp_app, module, key, default \\ nil)
+  def get_conf(_otp_app, :"Elixir", _key, default), do: default
 
   @doc """
   Get a value out of a configured keyword list from the given application/module.
@@ -61,7 +62,7 @@ defmodule GetConf do
       iex> GetConf.get_conf(:get_conf, TestModule, :foo)
       "bar"
   """
-  def get_conf(otp_app, module, key) when is_atom(otp_app) do
+  def get_conf(otp_app, module, key, default) when is_atom(otp_app) do
     with list when is_list(list) <- Application.get_env(otp_app, module, []),
          {:ok, value} <- Keyword.fetch(list, key) do
       value
@@ -72,7 +73,7 @@ defmodule GetConf do
           |> Enum.slice(0..-2)
           |> Module.concat()
 
-        get_conf(otp_app, parent, key)
+        get_conf(otp_app, parent, key, default)
     end
   end
 
